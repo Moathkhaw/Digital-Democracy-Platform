@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سفراء الديمقراطية الرقمية | تصميم معاذ الخوالدة</title>
+    <!-- الخطوط والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة الرسوم البيانية Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* --- الإعدادات الجذرية المتقدمة (اللون الأخضر الملكي) --- */
+        :root {
+            --primary: #042f2e; /* أخضر ملكي داكن جداً */
+            --secondary: #0d9488; /* تركواز داكن فخم */
+            --accent: #d97706; /* ذهبي/عنبري للإجراءات */
+            --danger: #dc2626;
+            --success: #16a34a;
+            --bg-main: #f3f4f6;
+            --bg-surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* الوضع الليلي المتوافق مع الأخضر الملكي */
+        .dark-mode {
+            --bg-main: #022c22; 
+            --bg-surface: #042f2e;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #134e4a;
+            --primary: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; scroll-behavior: smooth; }
+        body { background: var(--bg-main); color: var(--text-main); font-size: 16px; line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .container { width: 100%; max-width: 1350px; margin: 0 auto; padding: 0 1rem; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; }
+        
+        /* === 1. شاشة الانترو (Splash Screen) === */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, #021f1e 100%);
+            z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .splash-logo { font-size: 5rem; color: var(--accent); animation: pulseLogo 2s infinite; text-shadow: 0 0 30px rgba(217, 119, 6, 0.5); margin-bottom: 1rem; }
+        .splash-title { font-size: 3rem; font-weight: 900; letter-spacing: -0.5px; text-align: center; line-height: 1.2; }
+        .splash-title span { color: var(--secondary); }
+        .splash-subtitle { font-size: 1.2rem; color: #94a3b8; margin-top: 0.5rem; font-weight: 600; text-align: center;}
+        .splash-dev { font-size: 1rem; color: #f8fafc; margin-top: 3rem; background: rgba(255,255,255,0.1); padding: 0.8rem 1.5rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); box-shadow: var(--shadow-lg);}
+        .splash-dev i { color: var(--accent); margin-left: 8px;}
+        .splash-loader { width: 250px; height: 6px; background: rgba(255,255,255,0.1); margin-top: 2rem; border-radius: 6px; overflow: hidden; position: relative; }
+        .splash-loader::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); width: 0%; animation: loadBar 4.8s ease forwards; }
+        
+        @keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* --- الأزرار --- */
+        .btn { padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 700; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: var(--transition); font-size: 1rem;}
+        .btn-primary { background: var(--secondary); color: white; box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.4); }
+        .btn-primary:hover { background: #0f766e; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.5); }
+        .btn-accent { background: var(--accent); color: white; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.4); }
+        .btn-accent:hover { background: #b45309; transform: translateY(-2px); }
+        .btn-outline { border: 2px solid var(--border); color: var(--text-main); background: transparent; }
+        .btn-outline:hover { border-color: var(--secondary); color: var(--secondary); background: rgba(13, 148, 136, 0.05);}
+        
+        .btn-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-muted); transition: var(--transition); cursor: pointer;}
+        .btn-icon:hover { color: var(--secondary); border-color: var(--secondary); background: rgba(13, 148, 136, 0.05);}
+
+        /* --- القائمة العائمة السريعة --- */
+        .floating-menu { position: fixed; right: 1rem; bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 900; }
+        .float-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: var(--shadow-lg); cursor: pointer; transition: var(--transition); position: relative; border: 2px solid var(--secondary); }
+        .float-btn:hover { transform: scale(1.1); background: var(--secondary); }
+        .float-btn::before { content: attr(data-tooltip); position: absolute; right: 65px; background: var(--text-main); color: var(--bg-surface); padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.8rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: var(--transition); font-weight: 600; box-shadow: var(--shadow-md); transform: translateX(10px);}
+        .float-btn:hover::before { opacity: 1; transform: translateX(0); }
+        .float-btn.danger { background: var(--danger); border-color: #f87171;}
+        .float-btn.danger:hover { background: #b91c1c; }
+
+        /* --- شريط الأدوات العلوي والأخبار --- */
+        .top-bar { background: var(--primary); color: white; padding: 0.5rem 0; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1);}
+        .top-bar .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;}
+        .top-bar-badge { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; background: rgba(255,255,255,0.1); padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--secondary);}
+        .news-ticker { flex: 1; display: flex; overflow: hidden; background: rgba(0,0,0,0.3); border-radius: 9999px; padding: 0.25rem 1rem; white-space: nowrap; min-width: 200px; }
+        .news-ticker span { display: inline-block; animation: ticker 40s linear infinite; font-weight: 600; color: #cbd5e1; }
+        .news-ticker span strong { color: var(--accent); margin-left: 0.25rem; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .top-tools { display: flex; gap: 0.5rem; align-items: center; }
+
+        /* --- الهيدر الرئيسي --- */
+        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--secondary); transition: background-color 0.3s; }
+        .dark-mode header { background: rgba(4, 47, 46, 0.95); border-bottom-color: var(--accent); }
+        .navbar { display: flex; justify-content: space-between; align-items: center; height: 85px; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.6rem; font-weight: 900; color: var(--primary); letter-spacing: -0.5px;}
+        .brand i { font-size: 2.2rem; color: var(--secondary); }
+        
+        .nav-menu { display: flex; gap: 1.5rem; }
+        .nav-menu a { font-weight: 700; color: var(--text-muted); padding: 0.5rem 0; position: relative; transition: var(--transition); }
+        .nav-menu a::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--secondary); transition: var(--transition); border-radius: 2px;}
+        .nav-menu a:hover::after, .nav-menu a.active::after { width: 100%; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary); }
+        
+        .user-panel { display: flex; align-items: center; gap: 1rem; }
+        
+        /* قائمة الإشعارات */
+        .notification-container { position: relative; }
+        .notification-badge { position: absolute; top: -2px; right: -2px; background: var(--danger); color: white; font-size: 0.65rem; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; border: 2px solid var(--bg-surface); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        
+        .notif-dropdown { position: absolute; top: 120%; left: -150px; width: 320px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); z-index: 1001; overflow: hidden; }
+        .notif-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .notif-header { padding: 1rem; background: var(--bg-main); color: var(--text-main); font-weight: 700; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem;}
+        .notif-item { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; align-items: flex-start; cursor: pointer; transition: var(--transition); }
+        .notif-item:hover { background: var(--bg-main); }
+        .notif-item.unread { background: rgba(13, 148, 136, 0.05); border-right: 4px solid var(--secondary); }
+        .notif-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(13, 148, 136, 0.1); color: var(--secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.2rem; }
+
+        .user-profile { display: none; align-items: center; gap: 0.75rem; font-weight: 600; cursor: pointer; padding: 0.5rem; border-radius: 9999px; transition: var(--transition); border: 1px solid transparent;}
+        .user-profile:hover { background: var(--bg-main); border-color: var(--border); }
+        .user-profile img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); padding: 2px;}
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 0.95rem; color: var(--text-main); line-height: 1.2; font-weight: 800;}
+        .user-role { font-size: 0.75rem; color: var(--text-muted); }
+
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        /* --- الهيرو (Hero) --- */
+        .hero { position: relative; padding: 6rem 0 8rem; overflow: hidden; background: linear-gradient(135deg, var(--primary) 0%, #064e3b 100%); color: white;}
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/arabesque.png'); opacity: 0.1; z-index: 0; }
+        .hero-container { position: relative; z-index: 1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
+        
+        .hero-badge { display: inline-block; padding: 0.5rem 1.5rem; background: rgba(255,255,255,0.1); color: var(--accent); border-radius: 9999px; font-weight: 800; font-size: 0.95rem; margin-bottom: 1.5rem; border: 1px solid rgba(217, 119, 6, 0.5); backdrop-filter: blur(5px);}
+        .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 1.5rem; font-weight: 900; line-height: 1.2; letter-spacing: -1px;}
+        .hero h1 span { color: var(--accent); }
+        .hero p { font-size: 1.15rem; margin-bottom: 2.5rem; color: #cbd5e1; line-height: 1.8; max-width: 600px;}
+        
+        .search-bar-hero { display: flex; background: var(--bg-surface); padding: 0.5rem; border-radius: 50px; box-shadow: var(--shadow-lg); max-width: 600px; margin-bottom: 2rem;}
+        .search-bar-hero input { flex: 1; border: none; outline: none; padding: 0 1.5rem; font-family: 'Cairo'; font-size: 1.1rem; background: transparent; color: var(--text-main); }
+        .search-bar-hero button { background: var(--secondary); color: white; border: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: var(--transition); }
+        .search-bar-hero button:hover { background: #0f766e; }
+
+        .hero-stats { display: flex; gap: 2.5rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 2rem; margin-top: 2rem;}
+        .h-stat-num { font-size: 2rem; font-weight: 900; color: white; line-height: 1; display: block;}
+        .h-stat-label { font-size: 0.9rem; color: var(--secondary); font-weight: 700;}
+
+        /* --- استطلاع الرأي السريع (Quick Poll) --- */
+        .quick-poll-wrapper { margin-top: -60px; position: relative; z-index: 15; max-width: 900px; margin-left: auto; margin-right: auto; margin-bottom: 3rem; padding: 0 1rem;}
+        .quick-poll { background: var(--bg-surface); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-lg); border-top: 5px solid var(--accent); text-align: center; }
+        .quick-poll h3 { color: var(--primary); margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 800;}
+        .poll-options { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .poll-btn { flex: 1; min-width: 200px; padding: 1rem; border: 2px solid var(--border); border-radius: 12px; background: var(--bg-main); font-family: 'Cairo'; font-weight: 700; font-size: 1.05rem; color: var(--text-main); cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm);}
+        .poll-btn:hover { border-color: var(--secondary); background: rgba(13, 148, 136, 0.05); transform: translateY(-3px); box-shadow: var(--shadow-md);}
+        .poll-results { display: none; text-align: right; margin-top: 1.5rem; animation: fadeIn 0.5s ease;}
+        .poll-bar-bg { width: 100%; height: 35px; background: var(--bg-main); border-radius: 20px; margin-bottom: 1rem; overflow: hidden; position: relative; border: 1px solid var(--border);}
+        .poll-bar-fill { height: 100%; background: var(--secondary); display: flex; align-items: center; padding: 0 15px; color: white; font-weight: 800; font-size: 1rem; width: 0%; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* --- العناوين المشتركة --- */
+        .section-header { margin-bottom: 3.5rem; text-align: center; }
+        .section-badge { display: inline-block; padding: 0.4rem 1.2rem; background: rgba(13, 148, 136, 0.1); color: var(--secondary); border-radius: 9999px; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem; border: 1px solid rgba(13, 148, 136, 0.3);}
+        .section-title { font-size: clamp(2rem, 3vw, 2.8rem); color: var(--primary); margin-bottom: 1rem; font-weight: 900; letter-spacing: -0.5px; }
+        .section-desc { color: var(--text-muted); font-size: 1.15rem; max-width: 750px; margin: 0 auto; line-height: 1.7; font-weight: 600;}
+
+        /* === 1. لوحة تحكم السفير (Dashboard & Gamification) === */
+        .dashboard-section { padding: 5rem 0; background: var(--bg-main); border-bottom: 1px solid var(--border);}
+        .dash-grid { display: grid; grid-template-columns: 1fr 2fr 1.5fr; gap: 1.5rem; }
+        .dash-card { background: var(--bg-surface); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; transition: var(--transition); box-shadow: var(--shadow-sm);}
+        .dash-card:hover { box-shadow: var(--shadow-md); border-color: var(--secondary);}
+        .dash-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;}
+        .dash-card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .score-display { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--accent) 85%, var(--border) 0); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);}
+        .score-circle::before { content: ''; position: absolute; width: 80px; height: 80px; background: var(--bg-surface); border-radius: 50%; }
+        .score-value { position: relative; font-size: 2rem; font-weight: 900; color: var(--primary); }
+        .score-info h4 { font-size: 1.2rem; margin-bottom: 0.25rem; color: var(--primary); font-weight: 800;}
+        .score-info p { font-size: 0.9rem; color: var(--text-muted); font-weight: 600;}
+
+        .badges-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .badge-item { padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; border: 1px solid; }
+        .badge-item.unlocked { background: rgba(217, 119, 6, 0.1); color: var(--accent); border-color: rgba(217, 119, 6, 0.3); }
+        .badge-item.locked { background: var(--bg-main); color: var(--text-muted); border-color: var(--border); filter: grayscale(1); opacity: 0.6; }
+
+        .stat-grid-sm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: auto;}
+        .stat-item-sm { background: var(--bg-main); padding: 1.5rem 1rem; border-radius: 12px; border: 1px solid var(--border); text-align: center;}
+        .stat-item-sm-value { font-size: 2rem; font-weight: 900; color: var(--secondary); line-height: 1; margin-bottom: 0.5rem; }
+        .stat-item-sm-label { font-size: 0.85rem; color: var(--text-main); font-weight: 700; }
+
+        .leaderboard-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .lb-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--bg-main); border-radius: 12px; border: 1px solid var(--border); transition: var(--transition); }
+        .lb-item:hover { border-color: var(--accent); transform: translateX(-5px); background: var(--bg-surface); box-shadow: var(--shadow-sm);}
+        .lb-user { display: flex; align-items: center; gap: 1rem; font-weight: 800; font-size: 1rem; color: var(--primary);}
+        .lb-user img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg-surface); box-shadow: var(--shadow-sm);}
+        .lb-rank { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; font-weight: 900; background: var(--border); color: var(--text-main);}
+        .lb-rank.gold { background: #fef08a; color: #b45309; border: 1px solid #f59e0b;}
+        .lb-rank.silver { background: #e2e8f0; color: #475569; border: 1px solid #94a3b8;}
+        .lb-rank.bronze { background: #ffedd5; color: #9a3412; border: 1px solid #d97706;}
+        .lb-points { font-size: 0.9rem; font-weight: 900; color: var(--accent); background: rgba(217, 119, 6, 0.1); padding: 0.25rem 0.75rem; border-radius: 20px;}
+
+        /* === 2. باقة الخدمات الضخمة (>1000 Simulated) === */
+        .services-section { padding: 6rem 0; background: var(--bg-surface); }
+        .service-search { max-width: 600px; margin: 0 auto 3rem; position: relative; }
+        .service-search input { width: 100%; padding: 1.2rem 2rem; padding-left: 3rem; border-radius: 9999px; border: 2px solid var(--border); background: var(--bg-main); font-size: 1.1rem; font-family: 'Cairo'; outline: none; transition: var(--transition); color: var(--text-main);}
+        .service-search input:focus { border-color: var(--secondary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .service-search i { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
+
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .service-card { background: var(--bg-main); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); transition: var(--transition); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 1;}
+        .service-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 0; background: var(--secondary); transition: var(--transition); z-index: -1;}
+        .service-card:hover::before { height: 100%; }
+        .service-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--secondary); color: white;}
+        
+        .service-icon-wrap { width: 70px; height: 70px; border-radius: 20px; background: var(--bg-surface); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; transition: var(--transition); box-shadow: var(--shadow-sm); border: 1px solid var(--border);}
+        .service-card:hover .service-icon-wrap { background: var(--primary); color: white; border-radius: 50%; transform: rotateY(360deg); border-color: var(--primary);}
+        
+        .service-card h4 { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 0.75rem; transition: var(--transition);}
+        .service-card:hover h4, .service-card:hover p { color: white; }
+        .service-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; transition: var(--transition);}
+
+        .btn-view-all { display: block; width: max-content; margin: 3rem auto 0; padding: 1rem 3rem; font-size: 1.1rem; }
+
+        /* === 3. محاكي البرلمان المباشر (Live Parliament) === */
+        .live-section { padding: 6rem 0; background: var(--primary); color: white; }
+        .live-section .section-title { color: white; }
+        .live-section .section-desc { color: #cbd5e1; }
+        .live-container { display: grid; grid-template-columns: 2.5fr 1fr; gap: 1.5rem; background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-lg); border: 1px solid var(--border);}
+        
+        .video-player { background: #000; border-radius: 12px; position: relative; overflow: hidden; height: 500px; display: flex; align-items: center; justify-content: center; background-image: url('https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; border: 1px solid var(--border);}
+        .video-player::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2)); }
+        .live-badge { position: absolute; top: 20px; right: 20px; background: var(--danger); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; z-index: 10; animation: blink 2s infinite; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(220,38,38,0.5);}
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .play-btn-overlay { position: absolute; z-index: 10; font-size: 5rem; color: rgba(255,255,255,0.9); cursor: pointer; transition: var(--transition); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));}
+        .play-btn-overlay:hover { color: var(--accent); transform: scale(1.1); }
+        .video-info { position: absolute; bottom: 20px; right: 20px; z-index: 10; left: 20px; display: flex; justify-content: space-between; align-items: flex-end;}
+        
+        .chat-panel { background: var(--bg-main); border-radius: 12px; display: flex; flex-direction: column; height: 500px; border: 1px solid var(--border); overflow: hidden; }
+        .chat-header { background: var(--secondary); color: white; padding: 1rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; font-size: 1rem;}
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .chat-msg { background: var(--bg-surface); padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; color: var(--text-main); box-shadow: var(--shadow-sm); border: 1px solid var(--border); animation: fadeIn 0.3s ease;}
+        .chat-msg strong { color: var(--primary); display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 800;}
+        .chat-msg.official strong { color: var(--accent); }
+        .chat-input-area { padding: 1rem; background: var(--bg-surface); border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
+        .chat-input-area input { flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 9999px; outline: none; background: var(--bg-main); color: var(--text-main); font-family: 'Cairo'; transition: var(--transition);}
+        .chat-input-area input:focus { border-color: var(--secondary); }
+        .chat-input-area button { background: var(--secondary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; transition: var(--transition); font-size: 1.1rem; flex-shrink: 0;}
+        .chat-input-area button:hover { background: var(--primary); transform: scale(1.05);}
+
+        /* === 4. مختبر الموازنة التفاعلي (Interactive Budget Simulator) === */
+        .budget-simulator { padding: 6rem 0; background: var(--bg-main); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .budget-container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        
+        .sliders-wrapper { background: var(--bg-surface); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-md);}
+        .slider-group { margin-bottom: 1.5rem; }
+        .slider-group:last-child { margin-bottom: 0; }
+        .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .slider-label { font-weight: 800; color: var(--primary); font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .slider-val { font-weight: 900; color: var(--secondary); font-size: 1rem; background: rgba(13, 148, 136, 0.1); padding: 0.2rem 0.8rem; border-radius: 8px; border: 1px solid rgba(13, 148, 136, 0.2);}
+        
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--bg-surface); border: 3px solid var(--secondary); cursor: pointer; margin-top: -9px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.1s;}
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--border); border-radius: 9999px; }
+        input[type=range]:focus { outline: none; }
+        
+        #sliderRoads::-webkit-slider-thumb { border-color: var(--secondary); }
+        #sliderEdu::-webkit-slider-thumb { border-color: var(--accent); }
+        #sliderEco::-webkit-slider-thumb { border-color: var(--success); }
+        #sliderHealth::-webkit-slider-thumb { border-color: var(--danger); }
+
+        .budget-status { margin-top: 2rem; padding: 1.25rem; border-radius: 12px; text-align: center; font-weight: 800; border: 2px solid; transition: var(--transition); font-size: 1.1rem;}
+        .status-ok { background: rgba(22, 163, 74, 0.1); color: var(--success); border-color: rgba(22, 163, 74, 0.3); }
+        .status-warn { background: rgba(217, 119, 6, 0.1); color: var(--accent); border-color: rgba(217, 119, 6, 0.3); }
+        .status-err { background: rgba(220, 38, 38, 0.1); color: var(--danger); border-color: rgba(220, 38, 38, 0.3); }
+
+        .chart-wrapper { background: var(--bg-surface); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-shadow: var(--shadow-md);}
+
+        /* === 5. المسار التشريعي (Legislative Timeline) === */
+        .timeline-section { padding: 6rem 0; background: var(--bg-surface); }
+        .timeline-container { max-width: 900px; margin: 0 auto; position: relative; padding: 2rem 0; }
+        .timeline-container::before { content: ''; position: absolute; right: 50%; top: 0; bottom: 0; width: 4px; background: var(--border); transform: translateX(50%); border-radius: 4px; }
+        .timeline-item { display: flex; justify-content: flex-end; padding-right: 50%; position: relative; margin-bottom: 3rem; width: 100%; }
+        .timeline-item:nth-child(even) { justify-content: flex-start; padding-right: 0; padding-left: 50%; }
+        .timeline-icon { position: absolute; right: 50%; top: 0; transform: translateX(50%); width: 48px; height: 48px; border-radius: 50%; background: var(--bg-surface); border: 4px solid var(--border); z-index: 2; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.2rem; transition: var(--transition);}
+        .timeline-item.completed .timeline-icon { background: var(--secondary); color: white; border-color: rgba(13, 148, 136, 0.3); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.2);}
+        .timeline-item.active .timeline-icon { background: var(--accent); color: white; border-color: rgba(217, 119, 6, 0.3); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.2); animation: pulseLogo 2s infinite;}
+        
+        .timeline-content { background: var(--bg-main); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-sm); width: 90%; position: relative; border: 1px solid var(--border); transition: var(--transition);}
+        .timeline-item:hover .timeline-content { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--secondary);}
+        .timeline-item:nth-child(odd) .timeline-content { margin-right: 3rem; }
+        .timeline-item:nth-child(even) .timeline-content { margin-left: 3rem; }
+        
+        .timeline-content h4 { color: var(--primary); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .timeline-date { display: inline-block; padding: 0.25rem 1rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; color: var(--secondary); margin-bottom: 1rem; font-weight: 800; }
+
+        /* === 6. أداة التحقق من الأخبار بالذكاء الاصطناعي (AI Fact Checker) === */
+        .fact-checker-section { padding: 6rem 0; background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); position: relative; overflow: hidden; border-top: 1px solid var(--secondary);}
+        .dark-mode .fact-checker-section { background: linear-gradient(135deg, #022c22 0%, #042f2e 100%); border-top: 1px solid var(--accent);}
+        .fc-container { max-width: 900px; margin: 0 auto; background: var(--bg-surface); padding: 3.5rem; border-radius: var(--radius); box-shadow: var(--shadow-lg); border: 1px solid var(--border); text-align: center; position: relative; z-index: 1;}
+        .fc-icon { font-size: 4rem; color: var(--secondary); margin-bottom: 1.5rem; display: inline-block; animation: float 3s ease-in-out infinite;}
+        
+        .search-wrapper-fc { position: relative; margin: 2.5rem 0; display: flex; }
+        .search-wrapper-fc input { width: 100%; padding: 1.5rem 2rem; padding-left: 140px; border-radius: 9999px; border: 2px solid var(--border); background: var(--bg-main); color: var(--text-main); font-family: 'Cairo'; font-size: 1.1rem; font-weight: 600; transition: var(--transition); outline: none; }
+        .search-wrapper-fc input:focus { border-color: var(--secondary); box-shadow: 0 0 0 5px rgba(13, 148, 136, 0.1); }
+        .search-wrapper-fc button { position: absolute; left: 10px; top: 10px; bottom: 10px; padding: 0 2rem; border-radius: 9999px; font-size: 1.1rem;}
+
+        .fc-result-card { display: none; margin-top: 2rem; text-align: right; background: var(--bg-main); padding: 2rem; border-radius: 16px; border: 2px solid var(--border); animation: fadeIn 0.5s ease; }
+        .fc-result-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 900; }
+        .fc-score-container { margin-top: 2rem; background: var(--bg-surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);}
+        .fc-score-label { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 1rem; font-weight: 800; color: var(--primary); }
+        .fc-score-bar { height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
+        .fc-score-fill { height: 100%; width: 0%; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* === 7. البيانات المفتوحة والتحقق من الوثائق (Blockchain Data) === */
+        .data-section { background: var(--bg-main); padding: 6rem 0; border-top: 1px solid var(--border); }
+        
+        .verify-widget { background: linear-gradient(135deg, var(--primary) 0%, #064e3b 100%); padding: 2.5rem; border-radius: var(--radius); color: white; margin-bottom: 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.1);}
+        .verify-input-group { display: flex; flex: 1; min-width: 300px; background: rgba(0,0,0,0.3); border-radius: 50px; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.2); }
+        .verify-input-group input { flex: 1; background: transparent; border: none; color: white; padding: 0.5rem 1.5rem; outline: none; font-family: 'Cairo'; font-size: 1.05rem;}
+        .verify-input-group input::placeholder { color: #94a3b8; }
+        .verify-input-group button { background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 50px; cursor: pointer; font-weight: 800; font-size: 1rem; transition: var(--transition); }
+        .verify-input-group button:hover { background: #b45309; }
+
+        .data-toolbar { display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .data-search { padding: 1rem 1.5rem; border: 2px solid var(--border); border-radius: 50px; width: 400px; font-family: 'Cairo'; background: var(--bg-surface); color: var(--text-main); font-weight: 600; outline: none; transition: var(--transition); }
+        .data-search:focus { border-color: var(--secondary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        
+        .data-table-wrapper { overflow-x: auto; background: var(--bg-surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+        .data-table { width: 100%; border-collapse: collapse; text-align: right; }
+        .data-table th, .data-table td { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.95rem;}
+        .data-table th { background: var(--bg-main); color: var(--primary); font-weight: 900; font-size: 1.05rem; white-space: nowrap;}
+        .data-table tr:hover { background: rgba(13, 148, 136, 0.03); }
+        .badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 800; }
+        .badge-csv { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);}
+        .badge-pdf { background: rgba(220, 38, 38, 0.1); color: var(--danger); border: 1px solid rgba(220, 38, 38, 0.3);}
+        .hash-code { font-family: monospace; color: var(--secondary); font-weight: bold; background: rgba(13, 148, 136, 0.05); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(13, 148, 136, 0.2);}
+
+        /* === الفوتر الرسمي === */
+        footer { background: var(--primary); color: #f8fafc; padding: 5rem 0 2rem; border-top: 5px solid var(--accent); }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4rem; margin-bottom: 4rem; }
+        .footer-brand { margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 900; display: flex; align-items: center; gap: 0.75rem; color: white;}
+        .footer-brand i { color: var(--secondary); }
+        .footer-col h4 { font-size: 1.2rem; font-weight: 800; color: white; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(255,255,255,0.1); display: inline-block; position: relative;}
+        .footer-col h4::after { content: ''; position: absolute; bottom: -2px; right: 0; width: 50%; height: 2px; background: var(--accent); }
+        .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
+        .footer-links a { color: #cbd5e1; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; font-weight: 600;}
+        .footer-links a::before { content: '›'; font-family: 'Font Awesome 6 Free'; font-weight: 900; opacity: 0; transform: translateX(5px); transition: var(--transition); color: var(--secondary); }
+        .footer-links a:hover { color: white; padding-right: 5px; }
+        .footer-links a:hover::before { opacity: 1; transform: translateX(0); }
+        
+        .social-links { display: flex; gap: 1rem; margin-top: 2rem; }
+        .social-links a { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; transition: var(--transition); color: white; font-size: 1.2rem;}
+        .social-links a:hover { background: var(--secondary); border-color: var(--secondary); transform: translateY(-5px); }
+
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center; font-size: 0.95rem; color: #94a3b8; }
+        .dev-credit { display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(0,0,0,0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.05); }
+        .dev-credit i { color: var(--accent); font-size: 1.2rem;}
+        .dev-credit strong { color: white; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px;}
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
+            .hero-actions { justify-content: center; }
+            .hero h1 span::after { display: none; }
+            .dash-grid, .live-container, .budget-container, .timeline-item { grid-template-columns: 1fr; }
+            .timeline-item, .timeline-item:nth-child(even) { justify-content: flex-start; padding-right: 3rem; padding-left: 0; }
+            .timeline-container::before { right: 1.5rem; transform: none; }
+            .timeline-icon { right: 1.5rem; transform: translateX(50%); }
+            .timeline-item:nth-child(odd) .timeline-content, .timeline-item:nth-child(even) .timeline-content { margin-right: 0; margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .mobile-menu-btn { display: block; background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer;}
+            .dark-mode .mobile-menu-btn { color: white; }
+            .top-bar { display: none; }
+            .floating-menu { bottom: 1rem; right: 0.5rem; transform: scale(0.8); transform-origin: bottom right;}
+            .user-profile { display: none !important;}
+            .fc-container { padding: 1.5rem; }
+            .search-wrapper-fc input { padding: 1rem; padding-left: 100px; font-size: 1rem;}
+            .search-wrapper-fc button { padding: 0 1rem; }
+            .verify-input-group { flex-direction: column; border-radius: 12px; background: transparent; border: none; padding: 0;}
+            .verify-input-group input { border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); margin-bottom: 0.5rem; padding: 1rem;}
+            .verify-input-group button { border-radius: 8px; width: 100%; padding: 1rem;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- === 1. شاشة الانترو (Splash Screen) === -->
+    <div id="splash-screen">
+        <i class="fa-solid fa-landmark-dome splash-logo"></i>
+        <h1 class="splash-title">سفراء <span>الديمقراطية الرقمية</span></h1>
+        <p class="splash-subtitle">المنصة الوطنية الموحدة للمشاركة المدنية</p>
+        <div class="splash-loader"></div>
+        <div class="splash-dev">
+            <i class="fa-solid fa-code"></i> تصميم وتطوير هندسي: <strong>معاذ الخوالدة</strong>
+        </div>
+    </div>
+
+    <!-- القائمة العائمة السريعة -->
+    <div class="floating-menu">
+        <div class="float-btn danger" data-tooltip="طوارئ مجتمعية"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="float-btn" data-tooltip="مركز المساعدة"><i class="fa-solid fa-headset"></i></div>
+        <div class="float-btn" data-tooltip="تغيير المظهر" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i></div>
+    </div>
+
+    <!-- شريط الأدوات العلوي -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-badge"><i class="fa-solid fa-shield-check" style="color: var(--success);"></i> بوابة وطنية موثقة - المستوى الأول</div>
+            <div class="news-ticker">
+                <span>
+                    <strong>عاجل:</strong> إدراج مسودة قانون "حماية البيانات" للتصويت العام. 
+                    <strong>إعلان:</strong> نجاح مبادرة "شوارع آمنة" وجمع 25,000 توقيع. 
+                    <strong>تحديث:</strong> صدور تقرير الشفافية المالي، متاح الآن في قسم البيانات المفتوحة.
+                </span>
+            </div>
+            <div class="top-tools">
+                <button onclick="changeFontSize(1)" title="تكبير الخط"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                <button onclick="changeFontSize(-1)" title="تصغير الخط"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الهيدر الرئيسي -->
+    <header>
+        <div class="container navbar">
+            <a href="#" class="brand">
+                <i class="fa-solid fa-landmark-dome"></i>
+                <span>سفراء الديمقراطية</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="#" class="active">الرئيسية</a>
+                <a href="#dashboard">اللوحة القيادية</a>
+                <a href="#mega-services">الخدمات</a>
+                <a href="#live-parliament">البرلمان المباشر</a>
+                <a href="#budget">الموازنة</a>
+            </nav>
+            
+            <div class="user-panel">
+                <div class="notification-container">
+                    <div class="btn-icon" onclick="toggleNotifications()" style="position: relative;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-header">
+                            <span>الإشعارات الحديثة</span>
+                            <a href="#" style="color: var(--secondary); font-size: 0.8rem;">تحديد كـ مقروء</a>
+                        </div>
+                        <div class="notif-item unread">
+                            <div class="notif-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                            <div>
+                                <h5 style="font-size: 0.95rem; font-weight: 800; color: var(--primary);">تصويت جديد متاح</h5>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">تم فتح باب التصويت على الموازنة لعام 2026.</p>
+                            </div>
+                        </div>
+                        <div class="notif-item unread">
+                            <div class="notif-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--accent);"><i class="fa-solid fa-medal"></i></div>
+                            <div>
+                                <h5 style="font-size: 0.95rem; font-weight: 800; color: var(--primary);">إنجاز جديد!</h5>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">لقد حصلت على شارة "مبادر نشط".</p>
+                            </div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon" style="background: rgba(220, 38, 38, 0.1); color: var(--danger);"><i class="fa-solid fa-video"></i></div>
+                            <div>
+                                <h5 style="font-size: 0.95rem; font-weight: 800; color: var(--primary);">بدء البث المباشر</h5>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">جلسة البرلمان بدأت الآن.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-profile" id="userProfile" style="display: flex;">
+                    <img src="https://ui-avatars.com/api/?name=مواطن+فاعل&background=0d9488&color=fff&bold=true" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">زائر المنصة</span>
+                        <span class="user-role"><i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i> حساب غير موثق</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="padding: 0.6rem 1.2rem;"><i class="fa-solid fa-fingerprint"></i> الدخول الذكي</button>
+                <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- === الهيرو (Hero Section) === -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="hero-badge"><i class="fa-solid fa-bolt" style="margin-left: 5px;"></i> الجيل الجديد من المشاركة المدنية</span>
+                <h1>صوتك يُصنع به القرار، <br><span>شارك في البناء</span></h1>
+                <p>المنصة الوطنية الشاملة لممارسة حقوقك الديمقراطية. اقترح القوانين، صوّت على الموازنات، وتحقق من الأخبار بشفافية مطلقة باستخدام الذكاء الاصطناعي والبلوكتشين.</p>
+                
+                <div class="search-bar-hero">
+                    <input type="text" placeholder="ابحث في أكثر من 1000 خدمة تشريعية ومدنية...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i> بحث</button>
+                </div>
+                
+                <div class="hero-actions">
+                    <button class="btn btn-accent" style="padding: 1rem 2rem; font-size: 1.1rem;"><i class="fa-solid fa-user-shield"></i> إنشاء حساب موثق</button>
+                    <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3);"><i class="fa-regular fa-circle-play"></i> كيف تعمل المنصة؟</button>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="h-stat">
+                        <span class="h-stat-num">1.8M</span>
+                        <span class="h-stat-label">سفير موثق</span>
+                    </div>
+                    <div class="h-stat">
+                        <span class="h-stat-num">450+</span>
+                        <span class="h-stat-label">قرار مجتمعي</span>
+                    </div>
+                    <div class="h-stat">
+                        <span class="h-stat-num">100%</span>
+                        <span class="h-stat-label">شفافية رقمية</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="المشاركة المدنية الرقمية" style="border: 4px solid rgba(255,255,255,0.1);">
+                <div class="hero-floating-card">
+                    <div class="icon"><i class="fa-solid fa-check-double"></i></div>
+                    <div>
+                        <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;">قانون الاستثمار</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">تم إقراره مجتمعياً بنسبة 78%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === استطلاع الرأي السريع (Quick Poll) === -->
+    <div class="quick-poll-wrapper">
+        <div class="quick-poll" id="quickPoll">
+            <h3><i class="fa-solid fa-fire" style="color: var(--accent);"></i> تصويت اليوم: هل تؤيد تفعيل "التصويت الإلزامي" لرفع نسبة المشاركة السياسية؟</h3>
+            <div class="poll-options" id="pollOptions">
+                <button class="poll-btn" onclick="submitPoll()"><i class="fa-solid fa-thumbs-up" style="color: var(--success);"></i> أؤيد بشدة</button>
+                <button class="poll-btn" onclick="submitPoll()"><i class="fa-solid fa-thumbs-down" style="color: var(--danger);"></i> لا أؤيد، التصويت حرية</button>
+                <button class="poll-btn" onclick="submitPoll()"><i class="fa-solid fa-circle-question" style="color: var(--secondary);"></i> أحتاج مزيداً من المعلومات</button>
+            </div>
+            <div class="poll-results" id="pollResults">
+                <p style="text-align: center; margin-bottom: 1.5rem; font-weight: 900; color: var(--success); font-size: 1.2rem;"><i class="fa-solid fa-shield-check"></i> تم تسجيل صوتك وتشفيره بنجاح! نتائج الشارع:</p>
+                <div style="font-size: 0.95rem; color: var(--primary); margin-bottom: 5px; font-weight: 800;">أؤيد بشدة (65%)</div>
+                <div class="poll-bar-bg"><div class="poll-bar-fill" style="width: 65%;">65%</div></div>
+                <div style="font-size: 0.95rem; color: var(--primary); margin-bottom: 5px; font-weight: 800;">لا أؤيد (25%)</div>
+                <div class="poll-bar-bg"><div class="poll-bar-fill" style="width: 25%; background: var(--danger);">25%</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === 2. لوحة تحكم السفير (Dashboard) === -->
+    <section id="dashboard" class="dashboard-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">مساحتك الخاصة</span>
+                <h2 class="section-title">لوحة السفير الرقمي</h2>
+                <p class="section-desc">تتبع أثرك المجتمعي، سجل نشاطاتك، وتنافس في لوحة الشرف الوطنية لتعزيز المشاركة الإيجابية.</p>
+            </div>
+            
+            <div class="dash-grid">
+                <!-- ملخص التأثير والشارات -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3 class="dash-card-title"><i class="fa-solid fa-chart-line"></i> مؤشر التأثير المدني</h3>
+                        <button class="btn-icon" title="تفاصيل المؤشر"><i class="fa-solid fa-info"></i></button>
+                    </div>
+                    
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <span class="score-value">850</span>
+                        </div>
+                        <div class="score-info">
+                            <h4>سفير متقدم <i class="fa-solid fa-star" style="color: var(--accent);"></i></h4>
+                            <p>تحتاج 150 نقطة لبلوغ رتبة "صانع قرار".</p>
+                        </div>
+                    </div>
+                    
+                    <h4 style="font-size: 1rem; font-weight: 800; margin: 1rem 0 0.75rem; color: var(--primary);">حقيبة الإنجازات:</h4>
+                    <div class="badges-container">
+                        <div class="badge-item unlocked" title="حساب مسجل وموثق"><i class="fa-solid fa-user-shield"></i> موثق</div>
+                        <div class="badge-item unlocked" title="المشاركة بـ 5 تصويتات"><i class="fa-solid fa-check-double"></i> مصوت فاعل</div>
+                        <div class="badge-item locked" title="إنشاء مبادرة ناجحة"><i class="fa-solid fa-lightbulb"></i> مبادر</div>
+                        <div class="badge-item locked" title="تخصيص الموازنة"><i class="fa-solid fa-sack-dollar"></i> رقيب مالي</div>
+                    </div>
+                </div>
+                
+                <!-- الإحصائيات السريعة ومحفظة المكافآت -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3 class="dash-card-title"><i class="fa-solid fa-clipboard-list"></i> السجل الوطني للمشاركة</h3>
+                        <a href="#" style="font-size: 0.9rem; font-weight: 800; color: var(--secondary);">التفاصيل &larr;</a>
+                    </div>
+                    
+                    <div class="stat-grid-sm">
+                        <div class="stat-item-sm">
+                            <div class="stat-item-sm-value">12</div>
+                            <div class="stat-item-sm-label">قوانين تم التصويت عليها</div>
+                        </div>
+                        <div class="stat-item-sm">
+                            <div class="stat-item-sm-value">4</div>
+                            <div class="stat-item-sm-label">عرائض قمت بدعمها</div>
+                        </div>
+                        <div class="stat-item-sm">
+                            <div class="stat-item-sm-value" style="color: var(--accent);">1</div>
+                            <div class="stat-item-sm-label">مبادرات قيد المراجعة</div>
+                        </div>
+                    </div>
+                    
+                    <!-- متجر المكافآت (جديد) -->
+                    <div style="margin-top: 1.5rem; background: rgba(217, 119, 6, 0.05); border: 1px solid rgba(217, 119, 6, 0.2); padding: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 800; color: var(--primary);"><i class="fa-solid fa-gift" style="color: var(--accent);"></i> المحفظة المدنية</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">استبدل نقاطك بمكافآت (تذاكر نقل، خصومات)</div>
+                        </div>
+                        <button class="btn btn-accent" style="padding: 0.5rem 1rem; font-size: 0.9rem;">المتجر</button>
+                    </div>
+                </div>
+
+                <!-- لوحة الشرف -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3 class="dash-card-title"><i class="fa-solid fa-ranking-star" style="color: var(--accent);"></i> رواد التغيير (الأسبوع)</h3>
+                    </div>
+                    
+                    <div class="leaderboard-list">
+                        <div class="lb-item">
+                            <div class="lb-user">
+                                <span class="lb-rank gold">1</span>
+                                <img src="https://ui-avatars.com/api/?name=علي+ح&background=042f2e&color=fff" alt="User">
+                                علي حسن (العاصمة)
+                            </div>
+                            <span class="lb-points">1,240 <i class="fa-solid fa-gem" style="margin-right: 2px;"></i></span>
+                        </div>
+                        <div class="lb-item">
+                            <div class="lb-user">
+                                <span class="lb-rank silver">2</span>
+                                <img src="https://ui-avatars.com/api/?name=مريم+ص&background=0d9488&color=fff" alt="User">
+                                مريم صالح (إربد)
+                            </div>
+                            <span class="lb-points">980 <i class="fa-solid fa-gem" style="margin-right: 2px;"></i></span>
+                        </div>
+                        <div class="lb-item">
+                            <div class="lb-user">
+                                <span class="lb-rank bronze">3</span>
+                                <img src="https://ui-avatars.com/api/?name=طارق+ز&background=d97706&color=fff" alt="User">
+                                طارق زياد (العقبة)
+                            </div>
+                            <span class="lb-points">850 <i class="fa-solid fa-gem" style="margin-right: 2px;"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 3. باقة الخدمات الضخمة (Mega Services - يمثل أكثر من 1000 خدمة) === -->
+    <section id="mega-services" class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">دليل الخدمات</span>
+                <h2 class="section-title">بوابة الخدمات المدنية الشاملة</h2>
+                <p class="section-desc">أكثر من 1000+ أداة وخدمة حكومية ומجتمعية رقمية متكاملة في مكان واحد.</p>
+            </div>
+            
+            <div class="service-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="ابحث عن الخدمة التي تريدها (مثال: إنشاء عريضة، محكمة الشعب)...">
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-person-booth"></i></div>
+                    <h4>التصويت الرقمي الموثق</h4>
+                    <p>المشاركة في الاستفتاءات الوطنية والمحلية باستخدام تقنية البلوكتشين لضمان سرية صوتك.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-file-signature"></i></div>
+                    <h4>منصة العرائض الشعبية</h4>
+                    <p>اجمع التواقيع رقمياً لإلزام الجهات المعنية بمناقشة قضيتك تحت قبة البرلمان.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h4>المرصد الحضري التفاعلي</h4>
+                    <p>وثق الخلل في المرافق العامة وتابع سير عمليات الإصلاح جغرافياً وعلناً.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-id-card-clip"></i></div>
+                    <h4>الهوية المدنية الذكية</h4>
+                    <p>إصدار وتوثيق هويتك الوطنية الذكية التي تمنحك صلاحيات تشريعية ورقابية كاملة.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <h4>مختبر التشريعات العام</h4>
+                    <p>اقرأ مسودات القوانين وضع تعديلاتك وتعليقاتك المباشرة على النصوص والمواد.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-handshake-angle"></i></div>
+                    <h4>بنك التطوع الوطني</h4>
+                    <p>فرص تطوعية موثقة تضاف مباشرة لسيرتك المدنية وتحول إلى نقاط تأثير.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                    <h4>تتبع النواب (مراقب)</h4>
+                    <p>راقب أداء ممثل منطقتك، حضور الجلسات، وسجل تصويته التفصيلي تحت القبة.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon-wrap"><i class="fa-solid fa-fingerprint"></i></div>
+                    <h4>التوقيع الرقمي للوثائق</h4>
+                    <p>صادق على الاتفاقيات والعقود المجتمعية قانونياً باستخدام مفتاحك المشفر.</p>
+                </div>
+            </div>
+            
+            <button class="btn btn-outline btn-view-all">استعراض كافة الخدمات الـ 1000+ <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+    </section>
+
+    <!-- === 4. محاكي البرلمان المباشر (Live Parliament TV & Chat) === -->
+    <section id="live-parliament" class="live-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3);">قناة الديمقراطية</span>
+                <h2 class="section-title">البث المباشر للجلسات التشريعية</h2>
+                <p class="section-desc">تابع مجريات الجلسات البرلمانية، استمع للنقاشات، وشارك برأيك فوراً في الغرفة التفاعلية المؤثرة في قرار اللجان.</p>
+            </div>
+            
+            <div class="live-container">
+                <!-- شاشة العرض -->
+                <div class="video-player">
+                    <div class="live-badge"><i class="fa-solid fa-circle"></i> مباشر الآن</div>
+                    <i class="fa-solid fa-circle-play play-btn-overlay"></i>
+                    <div class="video-info">
+                        <div>
+                            <div style="font-weight: 900; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">الجلسة العادية (مناقشة قانون الصحة)</div>
+                            <div style="font-size: 0.9rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);"><i class="fa-solid fa-users"></i> 14,250 مشاهد</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- المحادثة الحية (Live Chat) -->
+                <div class="chat-panel">
+                    <div class="chat-header">
+                        <span>غرفة تفاعل السفراء</span>
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div class="chat-messages" id="liveChatMessages">
+                        <div class="chat-msg"><strong>سعيد العبدلله:</strong> أؤيد التعديل المقترح على المادة الرابعة. التأمين ضروري للجميع.</div>
+                        <div class="chat-msg official"><strong>لجنة التنظيم:</strong> سيتم فتح باب التصويت الرقمي بعد انتهاء كلمة المقرر خلال 10 دقائق.</div>
+                        <div class="chat-msg"><strong>فاطمة حسين:</strong> هل يشمل التأمين الفئات العمرية فوق 60 بالمجان؟</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="liveChatInput" placeholder="شارك برأيك كسفير...">
+                        <button onclick="sendLiveMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 5. مختبر الموازنة التفاعلي (Interactive Budget Simulator) === -->
+    <section id="budget" class="budget-simulator">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">الرقابة المالية المتقدمة</span>
+                <h2 class="section-title">مختبر الموازنة التشاركية الذكي</h2>
+                <p class="section-desc">أنت صاحب القرار. استخدم المؤشرات لتوزيع ميزانية منطقتك الافتراضية (10 مليون دينار)، وسيقوم النظام بدمج مقترحك مع آراء المجتمع وتحديث الرسم البياني فوراً.</p>
+            </div>
+            
+            <div class="budget-container">
+                <!-- Sliders -->
+                <div class="sliders-wrapper">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 2rem; color: var(--primary); font-weight: 900;"><i class="fa-solid fa-sliders" style="color: var(--secondary);"></i> حدد أولويات الإنفاق:</h3>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label"><i class="fa-solid fa-road" style="color: var(--secondary);"></i> البنية التحتية والطرق</span>
+                            <span class="slider-val" id="valRoads">3.5M</span>
+                        </div>
+                        <input type="range" id="sliderRoads" min="0" max="10" step="0.5" value="3.5" oninput="updateBudget()">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label"><i class="fa-solid fa-school" style="color: var(--accent);"></i> التعليم والمدارس</span>
+                            <span class="slider-val" id="valEdu">2.5M</span>
+                        </div>
+                        <input type="range" id="sliderEdu" min="0" max="10" step="0.5" value="2.5" oninput="updateBudget()">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label"><i class="fa-solid fa-tree" style="color: var(--success);"></i> البيئة والحدائق</span>
+                            <span class="slider-val" id="valEco">2.0M</span>
+                        </div>
+                        <input type="range" id="sliderEco" min="0" max="10" step="0.5" value="2.0" oninput="updateBudget()">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label"><i class="fa-solid fa-heart-pulse" style="color: var(--danger);"></i> الرعاية الصحية</span>
+                            <span class="slider-val" id="valHealth">2.0M</span>
+                        </div>
+                        <input type="range" id="sliderHealth" min="0" max="10" step="0.5" value="2.0" oninput="updateBudget()">
+                    </div>
+                    
+                    <div class="budget-status status-ok" id="budgetAlert">
+                        <i class="fa-solid fa-scale-balanced"></i> المجموع الموزع: 10.0M (موازنة متوازنة ومطابقة للسقف)
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; font-size: 1.1rem; padding: 1rem;"><i class="fa-solid fa-cloud-arrow-up"></i> اعتماد المقترح ورفعه للجنة المالية</button>
+                </div>
+                
+                <!-- Chart -->
+                <div class="chart-wrapper">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--primary); font-weight: 800;">التمثيل البياني المباشر لمقترحك</h3>
+                    <div style="width: 100%; height: 350px; position: relative;">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 6. المسار التشريعي (Legislative Timeline) === -->
+    <section id="timeline" class="timeline-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">التشريع التفاعلي</span>
+                <h2 class="section-title">المسار التشريعي المباشر</h2>
+                <p class="section-desc">تابع رحلة القوانين خطوة بخطوة، من لحظة اقتراحها كعريضة شعبية وحتى إقرارها النهائي.</p>
+                <div style="margin-top: 1.5rem; display: inline-block; background: var(--bg-surface); padding: 0.75rem 2rem; border-radius: 30px; border: 2px solid var(--secondary); box-shadow: var(--shadow-sm); font-weight: 800;">
+                    <span style="color: var(--primary);">القانون المعروض للتتبع:</span> مشروع قانون الاستثمار الوطني 2026
+                </div>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-item completed">
+                    <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">10 يناير 2026</span>
+                        <h4>صياغة المسودة وعرضها مجتمعياً</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">تم إعداد المسودة وعرضها للنقاش العام عبر منصة السفراء وجمع الملاحظات الأولية.</p>
+                    </div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">15 فبراير 2026</span>
+                        <h4>التصويت الرقمي العام</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">تم جمع آراء أكثر من 100,000 مواطن وتعديل 3 مواد رئيسية بناءً على الأغلبية.</p>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-icon"><i class="fa-solid fa-gavel"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date" style="background: rgba(217, 119, 6, 0.1); border-color: var(--accent); color: var(--accent);">المرحلة الحالية (أبريل 2026)</span>
+                        <h4>المناقشة تحت قبة البرلمان</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">يتم الآن مناقشة المسودة المعدلة من قبل اللجان النيابية تمهيداً للتصويت النهائي.</p>
+                        <button class="btn btn-primary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-tv"></i> مشاهدة الجلسة</button>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="timeline-content" style="opacity: 0.6;">
+                        <span class="timeline-date" style="background: var(--bg-main); border-color: var(--border); color: var(--text-muted);">المرحلة القادمة</span>
+                        <h4>الإرادة الملكية/الرئاسية والنشر</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">تصديق القانون ونشره في الجريدة الرسمية وبوابة البيانات المفتوحة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 7. المدقق الآلي (AI Fact Checker) === -->
+    <section id="fact-check" class="fact-checker-section">
+        <div class="container">
+            <div class="fc-container">
+                <i class="fa-solid fa-robot fc-icon"></i>
+                <h2 style="font-size: 2.2rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 900;">المدقق الآلي للأخبار بالذكاء الاصطناعي</h2>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; font-weight: 600;">لمحاربة الشائعات: أدخل أي خبر أو ادعاء سياسي/اقتصادي ليقوم الذكاء الاصطناعي بمقاطعته مع البيانات والمحاضر الحكومية فوراً.</p>
+                
+                <div class="search-wrapper-fc">
+                    <input type="text" id="fcInput" placeholder="الصق الخبر هنا للتحقق من صحته (مثال: تم إلغاء ضريبة المبيعات على السلع الأساسية)...">
+                    <button class="btn btn-secondary" style="background: var(--primary); color: white; border: none; font-weight: 800; cursor: pointer;" onclick="checkFact()"><i class="fa-solid fa-shield-halved"></i> بدء الفحص الآلي</button>
+                </div>
+                
+                <div class="fc-result-card" id="fcResult">
+                    <div class="fc-result-header" id="fcTitle"></div>
+                    <p style="color: var(--text-main); font-size: 1.05rem; line-height: 1.6; font-weight: 600;" id="fcDesc"></p>
+                    
+                    <div class="fc-score-container">
+                        <div class="fc-score-label">
+                            <span>مؤشر المصداقية (نسبة التطابق مع المصادر الرسمية)</span>
+                            <span id="fcScoreText">0%</span>
+                        </div>
+                        <div class="fc-score-bar">
+                            <div class="fc-score-fill" id="fcScoreFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 8. البيانات المفتوحة ومدقق البلوكتشين (Blockchain Verify) === -->
+    <section id="data" class="data-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">الشفافية المطلقة</span>
+                <h2 class="section-title">بوابة البيانات المفتوحة وسجل البلوكتشين</h2>
+                <p class="section-desc">ابحث، حمّل، وتحقق من صحة القوانين والمحاضر الحكومية الموثقة رقمياً ولا يمكن تزويرها.</p>
+            </div>
+            
+            <!-- أداة التحقق (Blockchain Verification) -->
+            <div class="verify-widget">
+                <div>
+                    <h3 style="font-size: 1.4rem; margin-bottom: 0.5rem; font-weight: 900;"><i class="fa-brands fa-hive" style="color: var(--accent);"></i> مدقق الوثائق المتقدم (Blockchain)</h3>
+                    <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 600;">أدخل الرمز المرجعي (Hash) للوثيقة للتحقق من أصلها وأنها لم تتعرض لأي تلاعب أو تزوير.</p>
+                </div>
+                <div class="verify-input-group">
+                    <input type="text" id="verifyInput" placeholder="أدخل الرمز (مثال: #DOC-2026-F1)">
+                    <button onclick="verifyDocument()"><i class="fa-solid fa-shield-check"></i> تحقق من الوثيقة</button>
+                </div>
+            </div>
+            <div id="verifyResult" style="display: none; margin-top: -2rem; margin-bottom: 3rem; padding: 1.5rem; background: var(--bg-surface); border: 2px solid; border-radius: var(--radius); font-weight: 800; text-align: center; box-shadow: var(--shadow-md); font-size: 1.1rem;"></div>
+
+            <div class="data-toolbar">
+                <input type="text" id="dataSearchInput" class="data-search" placeholder="ابحث في اسم الوثيقة، الجهة، أو الرمز المرجعي..." onkeyup="filterTable()">
+                <button class="btn btn-outline" style="padding: 0.8rem 1.5rem;"><i class="fa-solid fa-filter"></i> فلاتر متقدمة</button>
+            </div>
+
+            <div class="data-table-wrapper">
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>الرمز المرجعي (Hash)</th>
+                            <th>اسم الوثيقة / مجموعة البيانات</th>
+                            <th>الجهة المصدرة</th>
+                            <th>تاريخ التحديث</th>
+                            <th>الصيغة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="hash-code">#DOC-2026-F1</span></td>
+                            <td style="font-weight: 700;">الإنفاق الحكومي التفصيلي للربع الأول 2026</td>
+                            <td>وزارة المالية</td>
+                            <td>20 أبريل 2026</td>
+                            <td><span class="badge badge-csv">CSV</span></td>
+                            <td><button class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-download"></i> تحميل</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="hash-code">#VOT-2026-X9</span></td>
+                            <td style="font-weight: 700;">نتائج التصويت المفتوح لقانون الجرائم الإلكترونية</td>
+                            <td>البرلمان المفتوح</td>
+                            <td>15 أبريل 2026</td>
+                            <td><span class="badge badge-pdf">PDF</span></td>
+                            <td><button class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-download"></i> تحميل</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="hash-code">#PRJ-2026-C3</span></td>
+                            <td style="font-weight: 700;">سجل العطاءات والمناقصات - مشاريع التنمية</td>
+                            <td>وزارة التخطيط</td>
+                            <td>اليوم</td>
+                            <td><span class="badge badge-csv">API / CSV</span></td>
+                            <td><button class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-download"></i> تحميل</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- === الفوتر الرسمي === -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="grid-column: span 2;">
+                    <div class="footer-brand">
+                        <i class="fa-solid fa-landmark-dome"></i> سفراء الديمقراطية
+                    </div>
+                    <p style="color: #94a3b8; font-size: 1rem; line-height: 1.8; max-width: 450px; margin-bottom: 1.5rem;">
+                        منصة وطنية تفاعلية مستقلة تهدف لتعزيز الثقافة المدنية، ترسيخ مبادئ المشاركة السياسية المجتمعية، وصناعة القرار بمنتهى الشفافية.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>الروابط الدستورية</h4>
+                    <div class="footer-links">
+                        <a href="#">البيانات المفتوحة</a>
+                        <a href="#">الجريدة الرسمية</a>
+                        <a href="#">الدستور والقوانين</a>
+                        <a href="#">مدونة السلوك للسفراء</a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>المساعدة والدعم</h4>
+                    <div class="footer-links">
+                        <a href="#">دليل الاستخدام الشامل</a>
+                        <a href="#">الأسئلة الشائعة (FAQ)</a>
+                        <a href="#">سياسة حماية البيانات</a>
+                        <a href="#">إمكانية الوصول (ذوي الهمم)</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="dev-credit">
+                    <i class="fa-solid fa-code"></i> تصميم وتطوير هندسي: <strong>معاذ الخوالدة</strong>
+                </div>
+                <div>&copy; 2026 منصة سفراء الديمقراطية الرقمية. جميع الحقوق محفوظة. (إصدار المنظومات الكبرى Enterprise Edition V3.0)</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- السكربتات المتقدمة لكل الميزات -->
+    <script>
+        // === 1. إخفاء الانترو بعد 5 ثواني ===
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                initBudgetChart(); // تهيئة المخطط البياني
+                document.body.style.overflowY = 'auto'; // إرجاع التمرير
+            }, 5000); 
+        });
+
+        // === 2. أدوات الوصول السريع والمظهر ===
+        let currentFontSize = 16;
+        function changeFontSize(step) {
+            currentFontSize += step;
+            if(currentFontSize >= 14 && currentFontSize <= 22) {
+                document.documentElement.style.fontSize = currentFontSize + 'px';
+            } else { currentFontSize -= step; }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            if(window.budgetChartInstance) {
+                const textColor = document.body.classList.contains('dark-mode') ? '#94a3b8' : '#1f2937';
+                window.budgetChartInstance.options.plugins.legend.labels.color = textColor;
+                window.budgetChartInstance.update();
+            }
+        }
+
+        // === 3. الإشعارات ===
+        function toggleNotifications() {
+            document.getElementById('notifDropdown').classList.toggle('active');
+        }
+        document.addEventListener('click', function(event) {
+            const notifContainer = document.querySelector('.notification-container');
+            if (notifContainer && !notifContainer.contains(event.target)) {
+                document.getElementById('notifDropdown').classList.remove('active');
+            }
+        });
+
+        // === 4. استطلاع الرأي السريع ===
+        function submitPoll() {
+            const options = document.getElementById('pollOptions');
+            const results = document.getElementById('pollResults');
+            
+            options.style.opacity = '0';
+            setTimeout(() => {
+                options.style.display = 'none';
+                results.style.display = 'block';
+                void results.offsetWidth; 
+                document.querySelectorAll('.poll-bar-fill').forEach(bar => {
+                    bar.style.width = bar.innerText;
+                });
+            }, 300);
+        }
+
+        // === 5. محادثة البرلمان المباشر (Live Chat) ===
+        function sendLiveMsg() {
+            const input = document.getElementById('liveChatInput');
+            const msg = input.value.trim();
+            if(msg) {
+                const box = document.getElementById('liveChatMessages');
+                box.innerHTML += `<div class="chat-msg"><strong style="color:var(--secondary);">سفير المنصة (أنت):</strong> ${msg}</div>`;
+                input.value = '';
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+        // رسائل آلية
+        const fakeMessages = ["نقاط هامة جداً تطرح الآن.", "يجب توضيح الميزانية المطلوبة لهذا البند.", "الشفافية في هذه الجلسة ممتازة.", "ننتظر فتح باب التصويت الرقمي."];
+        setInterval(() => {
+            const box = document.getElementById('liveChatMessages');
+            if(box) {
+                const randomMsg = fakeMessages[Math.floor(Math.random() * fakeMessages.length)];
+                box.innerHTML += `<div class="chat-msg"><strong>سفير فاعل:</strong> ${randomMsg}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+        }, 7000);
+
+        // === 6. مختبر الموازنة التفاعلي (Chart.js) ===
+        window.budgetChartInstance = null;
+        function initBudgetChart() {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            const textColor = document.body.classList.contains('dark-mode') ? '#94a3b8' : '#1f2937';
+            
+            window.budgetChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['البنية التحتية', 'التعليم والتطوير', 'البيئة والحدائق', 'الرعاية الصحية'],
+                    datasets: [{
+                        data: [3.5, 2.5, 2.0, 2.0],
+                        backgroundColor: ['#0d9488', '#d97706', '#16a34a', '#dc2626'],
+                        borderWidth: 0,
+                        hoverOffset: 15,
+                        cutout: '60%'
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'bottom', labels: {font: {family: 'Cairo', size: 14, weight: 'bold'}, color: textColor, padding: 25} },
+                        tooltip: { backgroundColor: 'rgba(4, 47, 46, 0.9)', titleFont: {family:'Cairo', size: 14}, bodyFont: {family:'Cairo', size: 13}, padding: 15, cornerRadius: 8}
+                    },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        }
+
+        function updateBudget() {
+            const r = parseFloat(document.getElementById('sliderRoads').value);
+            const e = parseFloat(document.getElementById('sliderEdu').value);
+            const ec = parseFloat(document.getElementById('sliderEco').value);
+            const h = parseFloat(document.getElementById('sliderHealth').value);
+            
+            document.getElementById('valRoads').innerText = r.toFixed(1) + 'M';
+            document.getElementById('valEdu').innerText = e.toFixed(1) + 'M';
+            document.getElementById('valEco').innerText = ec.toFixed(1) + 'M';
+            document.getElementById('valHealth').innerText = h.toFixed(1) + 'M';
+
+            const total = r + e + ec + h;
+            const alertBox = document.getElementById('budgetAlert');
+            
+            alertBox.className = 'budget-status'; 
+            
+            if(total > 10) {
+                alertBox.classList.add('status-err');
+                alertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> عجز في الموازنة: ${total.toFixed(1)}M (تجاوزت السقف بـ ${(total-10).toFixed(1)}M)`;
+            } else if (total < 10) {
+                alertBox.classList.add('status-warn');
+                alertBox.innerHTML = `<i class="fa-solid fa-circle-info"></i> فائض متاح للإنفاق: ${total.toFixed(1)}M (متبقي ${(10-total).toFixed(1)}M)`;
+            } else {
+                alertBox.classList.add('status-ok');
+                alertBox.innerHTML = `<i class="fa-solid fa-scale-balanced"></i> المجموع الموزع: 10.0M (موازنة متوازنة ومطابقة للسقف)`;
+            }
+
+            if(window.budgetChartInstance) {
+                window.budgetChartInstance.data.datasets[0].data = [r, e, ec, h];
+                window.budgetChartInstance.update();
+            }
+        }
+
+        // === 7. المدقق الآلي للأخبار (AI Fact Checker) ===
+        function checkFact() {
+            const input = document.getElementById('fcInput').value.trim();
+            if(!input) return;
+            
+            const resultBox = document.getElementById('fcResult');
+            const title = document.getElementById('fcTitle');
+            const desc = document.getElementById('fcDesc');
+            const bar = document.getElementById('fcScoreFill');
+            const scoreText = document.getElementById('fcScoreText');
+            
+            resultBox.style.display = 'block';
+            title.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="color: var(--secondary);"></i> جاري تحليل المعطيات وربطها بقواعد البيانات...';
+            title.style.color = 'var(--text-main)';
+            desc.innerText = 'يتم الآن مطابقة الكلمات المفتاحية مع الجريدة الرسمية، مسودات القوانين، وتصريحات المسؤولين الموثقة...';
+            bar.style.width = '0%';
+            resultBox.style.borderColor = 'var(--border)';
+            scoreText.innerText = '...';
+            
+            setTimeout(() => {
+                const isTrue = Math.random() > 0.4; 
+                
+                if(isTrue) {
+                    const score = Math.floor(Math.random() * (99 - 80 + 1) + 80); 
+                    title.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> ادعاء صحيح ومدعوم بأدلة رسمية';
+                    title.style.color = 'var(--success)';
+                    desc.innerText = 'التحليل الآلي يشير إلى أن هذا الادعاء يتطابق بنسبة عالية مع المقررات التشريعية المسجلة في قواعد بيانات منصة سفراء الديمقراطية.';
+                    bar.style.background = 'var(--success)';
+                    bar.style.width = `${score}%`;
+                    scoreText.innerText = `${score}%`;
+                    resultBox.style.borderColor = 'rgba(22, 163, 74, 0.4)';
+                } else {
+                    const score = Math.floor(Math.random() * (35 - 5 + 1) + 5); 
+                    title.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> تحذير: ادعاء مضلل أو يفتقر للأدلة';
+                    title.style.color = 'var(--danger)';
+                    desc.innerText = 'لم يتم العثور على أي سند قانوني، تشريعي، أو مالي رسمي يدعم هذا التصريح. يُنصح بعدم تداوله والاعتماد على المصادر الرسمية فقط.';
+                    bar.style.background = 'var(--danger)';
+                    bar.style.width = `${score}%`;
+                    scoreText.innerText = `${score}%`;
+                    resultBox.style.borderColor = 'rgba(220, 38, 38, 0.4)';
+                }
+            }, 2500);
+        }
+
+        // === 8. أداة التحقق من الوثائق (Blockchain Verifier) ===
+        function verifyDocument() {
+            const input = document.getElementById('verifyInput').value.trim();
+            const resultDiv = document.getElementById('verifyResult');
+            
+            if(!input) {
+                alert('عذراً، يرجى إدخال الرمز المرجعي (Hash) للوثيقة أولاً.');
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.style.color = 'var(--text-main)';
+            resultDiv.style.borderColor = 'var(--secondary)';
+            resultDiv.style.backgroundColor = 'transparent';
+            resultDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الاتصال بشبكة البلوكتشين الوطنية للتحقق من أصل الوثيقة...';
+
+            setTimeout(() => {
+                if(input.toUpperCase() === '#DOC-2026-F1' || input.toUpperCase() === '#VOT-2026-X9' || input.toUpperCase() === '#PRJ-2026-C3') {
+                    resultDiv.style.color = 'var(--success)';
+                    resultDiv.style.borderColor = 'var(--success)';
+                    resultDiv.style.backgroundColor = 'rgba(22, 163, 74, 0.1)';
+                    resultDiv.innerHTML = '<i class="fa-solid fa-shield-check fa-lg"></i> <strong>وثيقة موثقة وسليمة 100%:</strong> تم التحقق من كتلة البيانات (Block). الوثيقة أصلية وصادرة عن الجهة الرسمية ولم يطرأ عليها أي تعديل.';
+                } else {
+                    resultDiv.style.color = 'var(--danger)';
+                    resultDiv.style.borderColor = 'var(--danger)';
+                    resultDiv.style.backgroundColor = 'rgba(220, 38, 38, 0.1)';
+                    resultDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation fa-lg"></i> <strong>تحذير أمني:</strong> الرمز المرجعي غير متطابق مع أي سجل رسمي في السلسلة الكتلية (Blockchain). قد تكون الوثيقة مزورة أو غير مكتملة.';
+                }
+            }, 2500);
+        }
+
+        // === 9. فلترة جدول البيانات المفتوحة (Live Search) ===
+        function filterTable() {
+            let input = document.getElementById("dataSearchInput");
+            let filter = input.value.toUpperCase();
+            let table = document.getElementById("dataTable");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let tdHash = tr[i].getElementsByTagName("td")[0];
+                let tdName = tr[i].getElementsByTagName("td")[1];
+                let tdSource = tr[i].getElementsByTagName("td")[2];
+                if (tdHash || tdName || tdSource) {
+                    let txtHash = tdHash.textContent || tdHash.innerText;
+                    let txtName = tdName.textContent || tdName.innerText;
+                    let txtSource = tdSource.textContent || tdSource.innerText;
+                    
+                    if (txtHash.toUpperCase().indexOf(filter) > -1 || txtName.toUpperCase().indexOf(filter) > -1 || txtSource.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    </script>
+</body>
+</html>
